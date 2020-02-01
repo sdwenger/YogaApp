@@ -3,17 +3,20 @@ package com.example.workout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    static String [] initialList = {"Workout","Sets","Reps"};
+    static String [] initialList = {"Title","Sets","Reps"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,10 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText edittext = (EditText) findViewById(R.id.myNumber);
         edittext.setOnKeyListener(new NumberEnterListener(this));
+        final Context context = this;
+
+        final Button highLevelView = (Button) findViewById(R.id.jumpToHighLevel);
+        highLevelView.setOnClickListener(new View.OnClickListener() {public void onClick(View v) { Intent intent = new Intent(context, HighLevelView.class); startActivity(intent); }});
 
         setGridView(initialList);
     }

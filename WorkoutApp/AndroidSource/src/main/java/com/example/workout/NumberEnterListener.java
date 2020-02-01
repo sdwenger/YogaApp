@@ -13,8 +13,9 @@ import java.util.ArrayList;
 public class NumberEnterListener implements View.OnKeyListener {
 
     AppCompatActivity mainActivity;
-    /*
-    String dataInsert = "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (1,'Dumbbell Bench Press',3,'8,10,12')\n" +
+    //*
+    String tableCreate = "CREATE TABLE IF NOT EXISTS Strength (Day INT, Title VARCHAR(40), Sets INT, RepString VARCHAR(20))\n";
+    String []dataInsert = ("INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (1,'Dumbbell Bench Press',3,'8,10,12')\n" +
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (1,'Lat Pulldown',3,'8,10,12')\n" +
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (1,'Overhead Dumbbell Press',3,'8,10,12')\n" +
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (1,'Leg Press',3,'8,10,12')\n" +
@@ -137,7 +138,7 @@ public class NumberEnterListener implements View.OnKeyListener {
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (26,'Barbell Biceps Curl',4,'*Perform reps as: 10,10,12,12.')\n" +
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (26,'Incline Dumbbell Biceps Curl',3,'10')\n" +
             "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (26,'Preacher Curl with Cable',3,'10')\n" +
-            "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (26,'Crunch',3,'20')\n";
+            "INSERT INTO Strength(Day, Title, Sets, RepString) VALUES (26,'Crunch',3,'20')\n").split("\n");
     //*/
 
     public NumberEnterListener(AppCompatActivity mainActivity) {
@@ -165,27 +166,39 @@ public class NumberEnterListener implements View.OnKeyListener {
             }
             /*/
             ArrayList<String> tables = new ArrayList<String>();
-            SQLiteDatabase mydatabase = mainActivity.openOrCreateDatabase("Workouts",mainActivity.MODE_PRIVATE,null);
+            SQLiteDatabase mydatabase = mainActivity.openOrCreateDatabase("Workouts", mainActivity.MODE_PRIVATE, null);
+            mydatabase.execSQL(tableCreate);
+            Cursor c = mydatabase.rawQuery("SELECT Title, Sets, RepString FROM Strength", new String[]{});
+            if (!c.moveToFirst()) {
+                if (dataInsert.length > 5 && dataInsert.length < 1000) {
+                    for (String s: dataInsert) {mydatabase.execSQL(s);}
+                    ((MainActivity)mainActivity).setGridView(new String[]{"Success"});
+                } else {
+                    ((MainActivity)mainActivity).setGridView(new String[]{(new Integer(dataInsert.length)).toString()});
+                }
+            }
             String dayString = self.getText().toString();
             Integer rawNumber = Integer.parseInt(dayString);
             Integer dayNumber = reduce(rawNumber);
             if (rawNumber != dayNumber) {
                 self.setText(dayNumber.toString());
             }
-            Cursor c = mydatabase.rawQuery("SELECT Title, Sets, RepString FROM Strength WHERE Day=?", new String[]{dayNumber.toString()});
+            c = mydatabase.rawQuery("SELECT Title, Sets, RepString FROM Strength WHERE Day=?", new String[]{dayNumber.toString()});
             if (c.moveToFirst()) {
-                for (String s: MainActivity.initialList) {tables.add(s);}
-                while ( !c.isAfterLast() ) {
-                    tables.add(c.getString( c.getColumnIndex("Title")));
-                    tables.add(c.getString( c.getColumnIndex("Sets")));
-                    tables.add(c.getString( c.getColumnIndex("RepString")));
+                for (String s : MainActivity.initialList) {
+                    tables.add(s);
+                }
+                while (!c.isAfterLast()) {
+                    tables.add(c.getString(c.getColumnIndex("Title")));
+                    tables.add(c.getString(c.getColumnIndex("Sets")));
+                    tables.add(c.getString(c.getColumnIndex("RepString")));
                     c.moveToNext();
                 }
             } else {
                 tables.add("Rest day");
             }
-            ((MainActivity)mainActivity).setGridView(tables);
-            ((MainActivity)mainActivity).hideKeyboard(mainActivity);
+            ((MainActivity) mainActivity).setGridView(tables);
+            ((MainActivity) mainActivity).hideKeyboard(mainActivity);
 
             // */
             return true;
