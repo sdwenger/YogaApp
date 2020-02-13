@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
 
         SQLiteDatabase mydatabase = openOrCreateDatabase("Workout", MODE_PRIVATE, null);
+        //mydatabase.execSQL(tableCreate);
         Cursor c = mydatabase.rawQuery("SELECT Sequence, Name, IsLR FROM Yoga ORDER BY Sequence", new String[]{});
         /*
         if (!c.moveToFirst()) {
